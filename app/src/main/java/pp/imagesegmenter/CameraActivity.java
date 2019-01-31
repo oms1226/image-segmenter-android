@@ -257,9 +257,11 @@ public abstract class CameraActivity extends AppCompatActivity
                 // We don't use a front facing camera in this sample.
                 final Integer facing = characteristics.get(CameraCharacteristics.LENS_FACING);
                 if (facing != null && facing == CameraCharacteristics.LENS_FACING_FRONT) {
+                    return cameraId;
+                } else {
                     continue;
                 }
-
+/*
                 final StreamConfigurationMap map =
                         characteristics.get(CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP);
 
@@ -267,7 +269,7 @@ public abstract class CameraActivity extends AppCompatActivity
                     continue;
                 }
 
-                return cameraId;
+                return cameraId;*/
             }
         } catch (CameraAccessException e) {
             LOGGER.e(e, "Not allowed to access camera");
