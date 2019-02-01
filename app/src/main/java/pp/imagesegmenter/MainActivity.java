@@ -110,6 +110,7 @@ public class MainActivity extends CameraActivity implements OnImageAvailableList
                         sensorOrientation, false);
 
         cropToFrameTransform = new Matrix();
+
         frameToCropTransform.invert(cropToFrameTransform);
 
         trackingOverlay = findViewById(R.id.tracking_overlay);
@@ -135,6 +136,7 @@ public class MainActivity extends CameraActivity implements OnImageAvailableList
                     canvas.drawColor(backgroundColor);
 
                     final Matrix matrix = new Matrix();
+
                     final float scaleFactor = 2;
                     matrix.postScale(scaleFactor, scaleFactor);
                     matrix.postTranslate(
@@ -175,6 +177,15 @@ public class MainActivity extends CameraActivity implements OnImageAvailableList
         initialized = true;
     }
 
+    public Bitmap ChangeBitmapLeftRight(Bitmap source) {
+      Bitmap reVal = null;
+      Matrix matrix = new Matrix();
+      matrix.setScale(1, -1);
+      reVal = Bitmap.createBitmap(source, 0, 0, source.getWidth(), source.getHeight(), matrix, false);
+      source.recycle();
+      return reVal;
+    }
+
     @Override
     protected void processImage() {
         ++timestamp;
@@ -198,6 +209,7 @@ public class MainActivity extends CameraActivity implements OnImageAvailableList
         LOGGER.i("Preparing image " + currTimestamp + " for detection in bg thread.");
 
         rgbFrameBitmap.setPixels(getRgbBytes(), 0, previewWidth, 0, 0, previewWidth, previewHeight);
+        rgbFrameBitmap = ChangeBitmapLeftRight(rgbFrameBitmap);
 
         if (luminanceCopy == null) {
             luminanceCopy = new byte[originalLuminance.length];
@@ -206,6 +218,7 @@ public class MainActivity extends CameraActivity implements OnImageAvailableList
         readyForNextImage();
 
         final Canvas canvas = new Canvas(croppedBitmap);
+
         canvas.drawBitmap(rgbFrameBitmap, frameToCropTransform, null);
         // For examining the actual TF input.
         if (SAVE_PREVIEW_BITMAP) {
@@ -218,6 +231,7 @@ public class MainActivity extends CameraActivity implements OnImageAvailableList
                     final long startTime = SystemClock.uptimeMillis();
 
                     cropCopyBitmap = Bitmap.createBitmap(croppedBitmap);
+
                     List<Deeplab.Recognition> mappedRecognitions =
                             deeplab.segment(croppedBitmap,cropToFrameTransform);
 
